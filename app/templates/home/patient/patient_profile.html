@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+    <div class="content-section">
+        <div class="outer">
+            <div class="middle">
+                <div class="inner">
+                    <div class="dashboard-center">
+
+                        {% include 'home/patient/patient_summary.html' %}
+
+
+                        <div id="tabs">
+                            <ul>
+                                <li><a href="#demographic">Demographic</a></li>
+                                <li><a href="#payments">Payments</a></li>
+                                <li><a href="#medical_conditions">Medical Conditions</a></li>
+                                <li><a href="#prescriptions">Prescriptions</a></li>
+
+                            </ul>
+                            <div id="demographic">
+
+                                <div class="row">
+                                    <a
+                                            href="{{ url_for('home.edit_patient', id=patient.id) }}"
+                                            class="btn btn-sm btn-primary"
+                                            style="float: right;">New Medical Condition
+                                    </a>
+                                </div>
+
+
+                                <div class="row">
+                                    <label class="col-sm-2">First Name</label>
+                                    <div class="col-sm-10">{{ patient.first_name }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-sm-2">Last Name</label>
+                                    <div class="col-sm-10">{{ patient.last_name }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-sm-2">National ID</label>
+                                    <label class="col-sm-10">{{ patient.national_id }}</label>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-sm-2">Mobile Number</label>
+                                    <div class="col-sm-10">{{ patient.mobile_number }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-sm-2">Address</label>
+                                    <div class="col-sm-10">{{ patient.address }}</div>
+                                </div>
+
+
+                            </div>
+
+                            <div id="payments">
+
+
+                                <div class="row">
+                                    <a
+
+                                            href="{{ url_for('home.new_payment', id=patient.id) }}"
+                                            class="btn btn-sm btn-primary"
+                                            style="float: right;">New Payment
+                                    </a>
+                                </div>
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Billing Item</th>
+                                        <th>Cost</th>
+                                        <th>Date</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for payment in payments %}
+                                        <tr>
+                                            <td>{{ payment.billing_item_name }}</td>
+                                            <td>{{ payment.amount }}</td>
+                                            <td>{{ payment.date }}</td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                            <div id="medical_conditions">
+
+                                <div class="row">
+                                    <a
+                                            href="{{ url_for('home.new_medical_condition', id=patient.id) }}"
+                                            class="btn btn-sm btn-primary"
+                                            style="float: right;">New Medical Condition
+                                    </a>
+                                </div>
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>BP</th>
+                                        <th>Temperature</th>
+                                        <th>Special Conditions</th>
+                                        <th>Date Created</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for medical_condition in medical_conditions %}
+                                        <tr>
+                                            <td>{{ medical_condition.bp }}mmHg</td>
+                                            <td>{{ medical_condition.temperature }}°C</td>
+                                            <td>{{ medical_condition.special_conditions }}</td>
+                                            <td>{{ medical_condition.date }}</td>
+                                            <td>
+                                                <a href="{{ url_for('home.edit_medical_condition', id=medical_condition.id) }}">
+                                                    <i class="fa fa-pencil"></i> Edit
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                            <div id="prescriptions">
+
+                                <div class="row">
+                                    <a
+
+                                            href="{{ url_for('home.new_prescription', id=patient.id) }}"
+                                            class="btn btn-sm btn-primary"
+                                            style="float: right;">Create new Prescription
+                                    </a>
+                                </div>
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for prescription in prescriptions %}
+                                        <tr>
+                                            <td>{{ prescription.doctor }}</td>
+                                            <td>{{ prescription.date }}</td>
+                                            <td>
+                                                <a href="{{ url_for('home.list_prescription_items', id=prescription.id) }}">
+                                                    <i class="fa fa-pencil"></i> Prescription Items
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
+
+
+
+
