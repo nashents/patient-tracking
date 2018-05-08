@@ -1,4 +1,4 @@
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, abort
 from flask_login import login_required, current_user
 
 from . import home
@@ -97,13 +97,15 @@ def view_patient(id):
 @home.route('/patient/new_prescription/<int:id>', methods=['GET', 'POST'])
 @login_required
 def new_prescription(id):
-
+    if current_user.role.name == "Doctor":
         prescription = Prescription(doctor=current_user.first_name + " " + current_user.last_name,
-                                    patient_id=id)
+                                patient_id=id)
         db.session.add(prescription)
         db.session.commit()
         flash("Empty Prescription successfully created!")
         return redirect(url_for('home.view_patient', id=id))
+    else:
+        return abort()
 
 
 @home.route('/patient/new_payment/<int:id>', methods=['GET', 'POST'])
@@ -128,28 +130,29 @@ def new_payment(id):
 def new_medical_condition(id):
     patient = Patient.query.get(int(id))
 
-    form = MedicalConditionForm()
-    if form.validate_on_submit():
-
-        medical_condition = MedicalCondition(bp=form.bp.data, temperature=form.temperature.data,
+    if current_user.role.name == "Nurse":
+        form = MedicalConditionForm()
+        if form.validate_on_submit():
+            medical_condition = MedicalCondition(bp=form.bp.data, temperature=form.temperature.data,
                                              special_conditions=form.special_conditions.data)
-        patient.medical_conditions.append(medical_condition)
-        patient.save()
-        return redirect(url_for('home.view_patient', id=id))
+            patient.medical_conditions.append(medical_condition)
+            patient.save()
+            return redirect(url_for('home.view_patient', id=id))
+
+        else:
+            return render_template('home/patient/medical_condition/add.html', form=form, title='Add Medical Condition')
 
     else:
-        return render_template('home/patient/medical_condition/add.html', form=form, title='Add Medical Condition')
+        abort();
 
 
 @home.route('/patient/medical_condition/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_medical_condition(id):
-
     new_medical_condition = False
 
     medical_condition = MedicalCondition.query.filter_by(patient_id=id).first()
 
-    print("+++++++++++++++++++++++++", medical_condition)
     form = MedicalConditionForm(obj=medical_condition)
     if form.validate_on_submit():
         medical_condition.bp = form.bp.data
@@ -170,7 +173,6 @@ def edit_medical_condition(id):
 
 @home.route('/patient/prescription/prescription_items/<int:id>', methods=['GET', 'POST'])
 def list_prescription_items(id):
-
     prescription = Prescription.query.get(int(id))
     patient = Patient.query.get(int(prescription.patient_id))
     prescription_items = PrescriptionItem.query.filter_by(prescription_id=id).all()
@@ -182,7 +184,6 @@ def list_prescription_items(id):
 
 @home.route('/patient/prescription/prescription_item/<int:id>', methods=['GET', 'POST'])
 def add_prescription_item(id):
-
     prescription = Prescription.query.get(int(id))
     patient = Patient.query.get(int(prescription.patient_id))
 
